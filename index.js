@@ -30,7 +30,7 @@ const onConnection = socket => {
         .digest("hex")
 
     socket.on("vote", ({ phase, data }) =>
-        database.ref(`${sessionPath}/${phase}/${address}`).set(data)
+        database.ref(`${sessionPath}/${phase}/${hashedAddress}`).set(data)
     )
 
     const sendData = data => {
