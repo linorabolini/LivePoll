@@ -5,6 +5,9 @@ const io = require("socket.io")(http)
 const port = process.env.PORT || 3000
 const firebase = require("firebase")
 
+const crypto = require("crypto")
+const hash = crypto.createHash("sha256")
+
 const config = {
     apiKey: "AIzaSyBwvplEeaV5kqrvqk702CX1EI0iJCHI_JA",
     authDomain: "livepoll-bbfa0.firebaseapp.com",
@@ -24,13 +27,17 @@ const onConnection = socket => {
     const { session } = query
     const sessionPath = `sessions/${session}`
 
+    hash.update(address)
+    const hashedAddress = hash.digest("hex")
+
+
     socket.on("vote", ({ phase, data }) =>
         database.ref(`${sessionPath}/${phase}/${address}`).set(data)
     )
 
     const sendData = data => {
         // console.log("sending data", data.val())
-        socket.emit(sessionPath, data.val() || [], address)
+        socket.emit(sessionPath, data.val() || [], hashedAddress)
     }
     const sessionRef = database.ref(sessionPath)
 
