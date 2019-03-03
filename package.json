@@ -20,7 +20,6 @@
   "dependencies": {
     "express": "^4.16.4",
     "firebase": "^5.8.5",
-    "lowdb": "^1.0.0",
     "nodemon": "^1.18.10",
     "socketio": "^1.0.0"
   }
