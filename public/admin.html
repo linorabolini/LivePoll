@@ -1,0 +1,83 @@
+<head>
+    <meta charset="UTF-8" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <script src="https://unpkg.com/lodash@4.17.11/lodash.min.js"></script>
+    <script src="./socket.io.js"></script>
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="text/babel">
+        // get session from url params
+        const urlParams = new URLSearchParams(window.location.search)
+        const session = urlParams.get("session")
+
+        // init the connection
+        const socket = io(window.location.origin + window.location.search)
+
+        const Tiles = props => <div className="tiles" {...props} />
+
+        const Tile = ({ event, data, ...props }) => <button className="tile" {...props} />
+
+        const App = props => {
+            const { data = [], address, configs } = props
+            const phase = Math.max(data.length - 1, 0)
+
+            const phaseData = data[phase] || {}
+
+            const dataArr = _(phaseData)
+                .toPairs(phaseData)
+                .map("[1]")
+                .value()
+
+            let results = _.map(configs, "key").map(key => {
+                const most = _.head(
+                    _(dataArr)
+                        .map(key)
+                        .countBy()
+                        .entries()
+                        .maxBy("[1]")
+                )
+
+                return { most, key }
+            })
+
+            return (
+                <div>
+                    <Tiles>
+                        {results.map(r => (
+                            <Tile>
+                                <div style={{ marginBottom: "1rem" }}>{r.key}</div>
+                                <div
+                                    style={{
+                                        backgroundColor: "rgba(0, 0, 0, 0.1)",
+                                        borderRadius: 2,
+                                        padding: "1rem"
+                                    }}
+                                >
+                                    {r.most || "No Votes"}
+                                </div>
+                            </Tile>
+                        ))}
+                    </Tiles>
+                    <Tiles>
+                        <Tile onClick={() => socket.emit("phase")} children="NEXT PHASE" />
+                    </Tiles>
+                </div>
+            )
+        }
+
+        socket.on(`sessions/${session}`, (data, address, configs) => {
+            console.log("connected", data)
+            ReactDOM.render(
+                <App data={data} address={address} configs={configs} />,
+                document.getElementById("root")
+            )
+        })
+    </script>
+</head>
+
+<div id="root"></div>

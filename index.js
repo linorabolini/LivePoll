@@ -37,6 +37,16 @@ const onConnection = socket => {
         database.ref(`${sessionPath}/${phase}/${hashedAddress}`).set(data)
     )
 
+    socket.on("phase", () => {
+        database
+            .ref(sessionPath)
+            .once("value")
+            .then(r => {
+                const phases = r.val().length
+                database.ref(`${sessionPath}/${phases}`).set(0)
+            })
+    })
+
     const sendData = data => {
         // console.log("sending data", data.val())
         socket.emit(sessionPath, data.val() || [], hashedAddress, configs)
