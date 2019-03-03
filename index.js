@@ -1,9 +1,16 @@
 const express = require("express")
 const app = express()
 const http = require("http").Server(app)
+const configs = require("./configs")
 const io = require("socket.io")(http)
 const port = process.env.PORT || 3000
 const firebase = require("firebase")
+
+const hash = str =>
+    require("crypto")
+        .createHmac("sha256", "abcdefg12312312")
+        .update(str)
+        .digest("hex")
 
 const config = {
     apiKey: "AIzaSyBwvplEeaV5kqrvqk702CX1EI0iJCHI_JA",
@@ -24,10 +31,7 @@ const onConnection = socket => {
     const { session } = query
     const sessionPath = `sessions/${session}`
 
-    const hashedAddress = require("crypto")
-        .createHmac("sha256", "abcdefg12312312")
-        .update(address)
-        .digest("hex")
+    const hashedAddress = hash(address)
 
     socket.on("vote", ({ phase, data }) =>
         database.ref(`${sessionPath}/${phase}/${hashedAddress}`).set(data)
@@ -35,7 +39,7 @@ const onConnection = socket => {
 
     const sendData = data => {
         // console.log("sending data", data.val())
-        socket.emit(sessionPath, data.val() || [], hashedAddress)
+        socket.emit(sessionPath, data.val() || [], hashedAddress, configs)
     }
     const sessionRef = database.ref(sessionPath)
 
