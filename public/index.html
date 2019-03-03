@@ -25,7 +25,6 @@
                 onClick={e =>
                     socket.emit("vote", {
                         session,
-                        user,
                         phase,
                         data
                     })
@@ -35,9 +34,9 @@
         )
 
         const App = props => {
-            const { data = [] } = props
+            const { data = [], address } = props
             const phase = Math.max(data.length - 1, 0)
-            const vote = _.get(data, `${phase}.${user}`, defaultVote)
+            const vote = _.get(data, `${phase}.${address}`, defaultVote)
             return (
                 <React.Fragment>
                     <Button
@@ -55,11 +54,11 @@
             )
         }
 
-        socket.on(`sessions.${session}`, data => {
-            ReactDOM.render(<App data={data} />, document.getElementById("root"))
+        socket.on(`sessions/${session}`, (data, address) => {
+            ReactDOM.render(<App data={data} address={address} />, document.getElementById("root"))
         })
 
-        alert("Pentagrama live")
+        // alert("Pentagrama live")
     </script>
 </head>
 
