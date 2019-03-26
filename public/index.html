@@ -20,19 +20,7 @@
 
         const Tiles = props => <div className="tiles" {...props} />
 
-        const Tile = ({ phase, data, ...props }) => (
-            <button
-                className="tile"
-                onClick={e =>
-                    socket.emit("vote", {
-                        session,
-                        phase,
-                        data
-                    })
-                }
-                {...props}
-            />
-        )
+        const Tile = props => <button className="tile" {...props} />
 
         const App = props => {
             const { data = [], address, configs } = props
@@ -44,14 +32,37 @@
                         <div className="tilesWrapper">
                             <div className="title">{c.label || c.key}</div>
                             <Tiles>
-                                {c.options.map(o => (
-                                    <Tile
-                                        phase={phase}
-                                        data={{ ...vote, [c.key]: o.value }}
-                                        disabled={vote[c.key] === o.value}
-                                        children={o.label}
+                                {c.type === "button" &&
+                                    c.options.map(o => (
+                                        <Tile
+                                            disabled={vote[c.key] === o.value}
+                                            children={o.label}
+                                            onClick={e =>
+                                                socket.emit("vote", {
+                                                    session,
+                                                    phase,
+                                                    data: { ...vote, [c.key]: o.value }
+                                                })
+                                            }
+                                        />
+                                    ))}
+                                {c.type === "range" && (
+                                    <input
+                                        className="range"
+                                        {...c}
+                                        step={1}
+                                        onChange={e => {
+                                            const voteData = {
+                                                session,
+                                                phase,
+                                                data: { ...vote, [c.key]: e.target.value }
+                                            }
+                                            console.log(voteData)
+                                            socket.emit("vote", voteData)
+                                        }}
+                                        value={vote[c.key] || 0}
                                     />
-                                ))}
+                                )}
                             </Tiles>
                         </div>
                     ))}

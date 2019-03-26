@@ -1,22 +1,19 @@
 module.exports = [
     {
         key: "sound",
-        options: [
-            { label: "Less Vol", value: -1 },
-            { label: "Vol OK", value: 0 },
-            { label: "More Vol", value: 1 }
-        ]
+        type: "range",
+        min: -2,
+        max: 2
     },
     {
         key: "tempo",
-        options: [
-            { label: "Moins Tempo", value: -1 },
-            { label: "Tempo OK", value: 0 },
-            { label: "Plus Tempo", value: 1 },
-        ]
+        type: "range",
+        min: -2,
+        max: 2
     },
     {
         key: "solo",
+        type: "button",
         options: [
             { label: "Solo 1", value: 1 },
             { label: "Solo 2", value: 2 },
