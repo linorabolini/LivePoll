@@ -1,6 +1,6 @@
 module.exports = [
     {
-        key: "sound",
+        key: "volume",
         type: "range",
         min: -2,
         max: 2
