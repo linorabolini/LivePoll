@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/linorabolini/LivePoll#readme",
   "dependencies": {
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "firebase": "^5.8.5",
     "nodemon": "^1.18.10",
     "socketio": "^1.0.0"
